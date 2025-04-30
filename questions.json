@@ -1,0 +1,68 @@
+[
+    {
+      "question": "What is the capital of Japan?",
+      "options": ["A) Tokyo", "B) Kyoto", "C) Osaka"],
+      "answer": "A",
+      "type": "choice",
+      "difficulty": "easy"
+    },
+    {
+      "question": "Solve: 12 * 3 + 5 = ?",
+      "answer": "41",
+      "type": "fill",
+      "difficulty": "medium"
+    },
+    {
+      "question": "Which planet is known as the Red Planet?",
+      "options": ["A) Earth", "B) Mars", "C) Jupiter"],
+      "answer": "B",
+      "type": "choice",
+      "difficulty": "easy"
+    },
+    {
+      "question": "Who wrote the play 'Hamlet'?",
+      "options": ["A) Shakespeare", "B) Charles Dickens", "C) Mark Twain"],
+      "answer": "A",
+      "type": "choice",
+      "difficulty": "medium"
+    },
+    {
+      "question": "What is 2 to the power of 5?",
+      "answer": "32",
+      "type": "fill",
+      "difficulty": "medium"
+    },
+    {
+      "question": "Which year did World War II end?",
+      "options": ["A) 1942", "B) 1945", "C) 1949"],
+      "answer": "B",
+      "type": "choice",
+      "difficulty": "medium"
+    },
+    {
+      "question": "Evaluate: (15 - 4) / (2 + 1)",
+      "answer": "3.67",
+      "type": "fill",
+      "difficulty": "hard"
+    },
+    {
+      "question": "Which language is known for its indentation-based syntax?",
+      "options": ["A) Python", "B) C++", "C) Java"],
+      "answer": "A",
+      "type": "choice",
+      "difficulty": "easy"
+    },
+    {
+      "question": "In binary, what is the result of 1011 + 1101?",
+      "answer": "11000",
+      "type": "fill",
+      "difficulty": "hard"
+    },
+    {
+      "question": "Which is a prime number?",
+      "options": ["A) 21", "B) 17", "C) 35"],
+      "answer": "B",
+      "type": "choice",
+      "difficulty": "medium"
+    }
+  ]

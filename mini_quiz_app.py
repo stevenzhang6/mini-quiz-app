@@ -1,28 +1,35 @@
+# Bring in all the tools we need: GUI, dialog boxes, random stuff, timing, and reading JSON files
 import tkinter as tk
 from tkinter import simpledialog, messagebox
 import random, time, json
 
+# Load questions and choose 5 random ones for the whole game
 all_questions = json.load(open("questions.json", encoding="utf-8"))
 shared_quiz_questions = random.sample(all_questions, 5)
 difficulty_scores = {"easy": 6, "medium": 8, "hard": 10}
 
+# This is the main class that runs the entire quiz app
 class QuizApp:
     def __init__(self, master):
+        # Set up the main window and its look
         self.master = master
         master.title("Mini Quiz")
         master.geometry("700x500")
         master.configure(bg="#1e1e1e")
 
+        # Set up game state and main labels/buttons
         self.players, self.scores, self.current_player_index = [], {}, 0
         self.label = tk.Label(master, text="""Welcome to the Quiz!\n\nRules:\n- 5 questions for all players.\n- 20 seconds per question.\n- ≤5s +3 pts, ≤10s +2 pts, ≤15s +1 pt.\n- Score = base + time bonus.""", font=("Arial", 14), wraplength=650, justify="left", fg="white", bg="#1e1e1e")
         self.label.pack(pady=(30, 10))
         self.timer_label = tk.Label(master, font=("Arial", 14), fg="orange", bg="#1e1e1e")
         self.timer_label.pack()
 
+        # Set up answer input options: text box and radio buttons
         self.answer_var = tk.StringVar()
         self.answer_entry = tk.Entry(master, textvariable=self.answer_var, font=("Arial", 14))
         self.radio_buttons = [tk.Radiobutton(master, variable=self.answer_var, font=("Arial", 14), anchor='w', justify='left', fg="white", bg="#1e1e1e", selectcolor="#333333") for _ in range(4)]
 
+        # Buttons for starting quiz and viewing leaderboard history
         self.submit_button = tk.Button(master, text="Start Quiz", font=("Arial", 14), command=self.setup_players, bg="#333333", fg="white")
         self.submit_button.pack(pady=5)
         self.view_history_button = tk.Button(master, text="View History", font=("Arial", 14), command=self.view_leaderboard_history, bg="#333333", fg="white")
@@ -31,6 +38,7 @@ class QuizApp:
         self.feedback_label.pack(pady=10)
         self.timer_id = self.remaining_time = 0
 
+    # Ask how many players are playing and collect their names
     def setup_players(self):
         num_players = simpledialog.askinteger("Players", "How many players?", parent=self.master, minvalue=1, maxvalue=10)
         if num_players:
@@ -41,11 +49,13 @@ class QuizApp:
             self.current_player_index = 0
             self.start_countdown(3)
 
+    # Start a 3-second countdown before the game begins
     def start_countdown(self, s):
         self.label.config(text=f"Starting in {s}...")
         self.submit_button.pack_forget()
         self.master.after(1000, self.start_countdown, s - 1) if s > 0 else self.start_quiz_for_player()
 
+    # Set up everything needed to begin a player's turn
     def start_quiz_for_player(self):
         self.view_history_button.pack_forget()
         self.score = self.current_question_index = self.correct_answers_in_a_row = 0
@@ -54,6 +64,7 @@ class QuizApp:
         self.label.config(text=f"{self.current_player}, your turn!")
         self.master.after(1000, self.next_question)
 
+    # Show the next question and reset the interface for it
     def next_question(self):
         self.answer_entry.pack_forget()
         [rb.pack_forget() for rb in self.radio_buttons]
@@ -72,11 +83,13 @@ class QuizApp:
             self.update_timer()
         else: self.end_turn()
 
+    # Show the countdown timer and update every second
     def update_timer(self):
         self.timer_label.config(text=f"Time left: {self.remaining_time} seconds")
         self.remaining_time -= 1
         self.timer_id = self.master.after(1000, self.update_timer) if self.remaining_time >= 0 else self.auto_skip_question()
 
+    # If the player runs out of time, move to the next question
     def auto_skip_question(self):
         self.submit_button.config(state="disabled")
         self.feedback_label.config(text="Time's up! Moving to next question.")
@@ -84,6 +97,7 @@ class QuizApp:
         self.current_question_index += 1
         self.master.after(1500, self.resume_quiz)
 
+    # Check the player’s answer and calculate score
     def check_answer(self):
         if self.timer_id: self.master.after_cancel(self.timer_id)
         self.submit_button.config(state="disabled")
@@ -100,12 +114,14 @@ class QuizApp:
         self.current_question_index += 1
         self.master.after(1500, self.resume_quiz)
 
+    # Load the next question after checking or skipping
     def resume_quiz(self):
         self.submit_button.config(state="normal")
         self.feedback_label.config(text="")
         self.timer_label.config(text="")
         self.next_question()
 
+    # Switch to the next player or end the game
     def end_turn(self):
         self.scores[self.current_player] = self.score
         self.current_player_index += 1
@@ -115,6 +131,7 @@ class QuizApp:
             self.master.after(5000, self.start_quiz_for_player)
         else: self.show_leaderboard()
 
+    # Show final scores, save them to file, and reset the game
     def show_leaderboard(self):
         self.view_history_button.pack(pady=5)
         try:
@@ -127,6 +144,7 @@ class QuizApp:
         self.submit_button.pack(pady=5)
         self.answer_var.set(""); self.answer_entry.pack_forget(); [rb.pack_forget() for rb in self.radio_buttons]
 
+    # Load and show leaderboard results from past games
     def view_leaderboard_history(self):
         try:
             with open("leaderboard.jsonl", "r", encoding="utf-8") as f:
@@ -138,6 +156,7 @@ class QuizApp:
                 messagebox.showinfo("History", text)
         except: messagebox.showinfo("History", "No past leaderboard data found.")
 
+# This launches the app window and runs the main game loop
 if __name__ == "__main__":
     root = tk.Tk()
     w, h = 700, 500
